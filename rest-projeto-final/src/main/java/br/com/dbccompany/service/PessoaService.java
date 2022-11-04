@@ -28,6 +28,22 @@ public class PessoaService {
         return result;
     }
 
+    public RelatorioDTO[] buscarRealatorioPorId(String idPessoa){
+
+        RelatorioDTO[] result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .queryParam("idPessoa", idPessoa)
+                .when()
+                        .get(baseUri + "/pessoa/relatorio")
+                .then()
+                        .log().all()
+                        .statusCode(200)
+                        .extract().as(RelatorioDTO[].class)
+                ;
+        return result;
+    }
+
     public PageDTOPessoaDTO[] buscarPessoas(){
 
         PageDTOPessoaDTO[] result =
@@ -71,6 +87,23 @@ public class PessoaService {
                 .then()
                         .log().all()
                         .extract().as(ResponseDTO.class)
+                ;
+        return result;
+    }
+
+    public PessoaDTO putPessoa(String requstBody, String idPessoa){
+
+        PessoaDTO result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .contentType(ContentType.JSON)
+                        .body(requstBody)
+                        .pathParam("idPessoa", idPessoa)
+                .when()
+                        .put(baseUri + "/pessoa/{idPessoa}")
+                .then()
+                        .log().all()
+                        .extract().as(PessoaDTO.class)
                 ;
         return result;
     }
