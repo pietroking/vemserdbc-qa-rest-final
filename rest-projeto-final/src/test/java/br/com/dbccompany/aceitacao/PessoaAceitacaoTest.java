@@ -10,12 +10,16 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
+import org.hamcrest.Matchers;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+
+import static org.hamcrest.MatcherAssert.assertThat;
 
 public class PessoaAceitacaoTest {
 
@@ -28,6 +32,8 @@ public class PessoaAceitacaoTest {
         return new String(Files.readAllBytes(Paths.get(caminhoJson)));
     }
     String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
+    String jsonBodyPessoaReplace = lerJson("src/test/resources/data/pessoaReplaceTest.json");
+    String jsonBodyPessoaErro = lerJson("src/test/resources/data/pessoaSemNome.json");
     String jsonBodyContato = lerJson("src/test/resources/data/contatoTest.json");
     String jsonBodyEndereco = lerJson("src/test/resources/data/enderecoTest.json");
 
@@ -37,6 +43,17 @@ public class PessoaAceitacaoTest {
         RelatorioDTO[] resultService = service.buscarRealatorio();
 
         Assert.assertEquals(resultService[0].getNomePessoa().toUpperCase(), "Maicon Machado Gerardi".toUpperCase());
+    }
+
+    @Test
+    public void deveRetornarRelatorioPessoaPorId(){
+        PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
+        RestAssured.defaultParser = Parser.JSON;
+
+        RelatorioDTO[] resultService2 = service.buscarRealatorioPorId(resultService.getIdPessoa());
+
+        Assert.assertEquals(resultService2[0].getNomePessoa().toUpperCase(), "Joker".toUpperCase());
+        service.deletePessoa(resultService.getIdPessoa());
     }
 
 //    @Test
@@ -52,7 +69,6 @@ public class PessoaAceitacaoTest {
 
         PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
         RestAssured.defaultParser = Parser.JSON;
-
         Assert.assertEquals(resultService.getNome().toUpperCase(), "joker".toUpperCase());
 
         service.deletePessoa(resultService.getIdPessoa());
@@ -61,10 +77,22 @@ public class PessoaAceitacaoTest {
     @Test
     public void deveAddPessoaSemNome(){
 
-        ResponseDTO resultService = service.postPessoaError(jsonBodyPessoa);
+        ResponseDTO resultService = service.postPessoaError(jsonBodyPessoaErro);
         RestAssured.defaultParser = Parser.JSON;
 
-        Assert.assertTrue(resultService.getErrors()[0].contains("em branco"));
+        Assert.assertEquals(resultService.getStatus(), "400");
+        assertThat(resultService.getErrors().size(), Matchers.is(1));
+    }
+
+    @Test
+    public void deveAtualizarPessoa(){
+
+        PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
+        RestAssured.defaultParser = Parser.JSON;
+        PessoaDTO resultService2 = service.putPessoa(jsonBodyPessoaReplace, resultService.getIdPessoa());
+        Assert.assertEquals(resultService2.getNome().toUpperCase(), "harleyquinn".toUpperCase());
+
+        service.deletePessoa(resultService.getIdPessoa());
     }
 
     @Test
