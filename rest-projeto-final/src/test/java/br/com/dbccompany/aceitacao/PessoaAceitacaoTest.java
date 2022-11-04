@@ -75,4 +75,7 @@ public class PessoaAceitacaoTest {
         Response resultService2 =  service.deletePessoa(resultService.getIdPessoa());
         Assert.assertEquals(resultService2.statusCode(), 200);
     }
+
+
+
 }
