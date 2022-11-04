@@ -5,13 +5,13 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties
-public class PessoaDTO {
+public class PessoaDTO extends ResponseDTO{
 
     private String nome;
     private String dataNascimento;
     private String cpf;
     private String email;
     private String idPessoa;
-//    private ContatoDTO[] contatos;
-//    private EnderecoDTO[] enderecos;
+    private ContatoDTO[] contatos;
+    private EnderecoDTO[] enderecos;
 }

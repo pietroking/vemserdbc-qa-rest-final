@@ -9,6 +9,7 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
+import io.restassured.response.Response;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -54,16 +55,24 @@ public class PessoaAceitacaoTest {
 
         Assert.assertEquals(resultService.getNome().toUpperCase(), "joker".toUpperCase());
 
-//        service.deletePessoa(resultService.getIdPessoa());
+        service.deletePessoa(resultService.getIdPessoa());
+    }
+
+    @Test
+    public void deveAddPessoaSemNome(){
+
+        ResponseDTO resultService = service.postPessoaError(jsonBodyPessoa);
+        RestAssured.defaultParser = Parser.JSON;
+
+        Assert.assertTrue(resultService.getErrors()[0].contains("em branco"));
     }
 
     @Test
     public void deveDeletarPessoa(){
 
-//        RestAssured.defaultParser = Parser.JSON;
+        PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
 
-        ResponseDTO resultService =  service.deletePessoa("72");
-
-        Assert.assertEquals(resultService.getStatus(), "200");
+        Response resultService2 =  service.deletePessoa(resultService.getIdPessoa());
+        Assert.assertEquals(resultService2.statusCode(), 200);
     }
 }

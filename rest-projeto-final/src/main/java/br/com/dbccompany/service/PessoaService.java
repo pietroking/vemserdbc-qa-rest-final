@@ -6,6 +6,7 @@ import br.com.dbccompany.dto.RelatorioDTO;
 import br.com.dbccompany.dto.ResponseDTO;
 import br.com.dbccompany.utils.Login;
 import io.restassured.http.ContentType;
+import io.restassured.response.Response;
 
 import static io.restassured.RestAssured.*;
 
@@ -56,25 +57,40 @@ public class PessoaService {
                         .post(baseUri + "/pessoa")
                 .then()
                         .log().all()
-                        .statusCode(200)
                         .extract().as(PessoaDTO.class)
                 ;
         return result;
     }
 
-    public ResponseDTO deletePessoa(String idPessoa){
+    public ResponseDTO postPessoaError(String requstBody){
 
         ResponseDTO result =
-                (ResponseDTO) given()
+                given()
                         .header("Authorization", tokenAdm)
-                        .pathParam("idPessoa", idPessoa)
+                        .contentType(ContentType.JSON)
+                        .body(requstBody)
                 .when()
-                        .delete(baseUri + "/pessoa/{idPessoa}")
+                        .post(baseUri + "/pessoa")
                 .then()
                         .log().all()
-                        .statusCode(200)
-                        .extract().response();
+                        .extract().as(ResponseDTO.class)
                 ;
+        return result;
+    }
+
+    public Response deletePessoa(String idPessoa){
+
+         Response result =
+                 (Response) given()
+                         .header("Authorization", tokenAdm)
+                         .pathParam("idPessoa", idPessoa)
+                 .when()
+                         .delete(baseUri + "/pessoa/{idPessoa}")
+                 .then()
+                         .log().all()
+                         .statusCode(200)
+                         .extract().response()
+                 ;
         return result;
     }
 

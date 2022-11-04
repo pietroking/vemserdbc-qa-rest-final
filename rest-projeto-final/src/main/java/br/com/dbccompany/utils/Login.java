@@ -14,7 +14,7 @@ public class Login {
                 given()
                         .log().all()
                         .contentType(ContentType.JSON)
-                        .body("{\"login\" : \"admin\", \"senha\" : \"123\"}")
+                        .body("{\"login\" : \"grupo04qa\", \"senha\" : \"1234\"}")
                 .when()
                         .post(baseUri + "/auth")
                 .then()
