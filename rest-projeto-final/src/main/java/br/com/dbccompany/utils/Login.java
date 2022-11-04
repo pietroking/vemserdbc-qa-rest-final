@@ -9,7 +9,6 @@ public class Login {
     String baseUri = "http://vemser-dbc.dbccompany.com.br:39000/vemser/dbc-pessoa-api";
 
     public String authenticationAdmin(){
-
         String result =
                 given()
                         .log().all()
