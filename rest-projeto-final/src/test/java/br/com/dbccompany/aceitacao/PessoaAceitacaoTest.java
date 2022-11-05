@@ -52,8 +52,81 @@ public class PessoaAceitacaoTest {
 
         RelatorioDTO[] resultService2 = service.buscarRealatorioPorId(resultService.getIdPessoa());
 
-        Assert.assertEquals(resultService2[0].getNomePessoa().toUpperCase(), "Joker".toUpperCase());
+        Assert.assertEquals(resultService2[0].getNomePessoa().toUpperCase(), resultService.getNome().toUpperCase());
         service.deletePessoa(resultService.getIdPessoa());
+    }
+
+    @Test
+    public void deveRetornarRelatorioPessoaPorIdInexistente(){
+
+        RelatorioDTO[] resultService2 = service.buscarRealatorioPorId("99999");
+
+        Assert.assertEquals(resultService2[0].getNomePessoa().toUpperCase(), "Joker".toUpperCase());
+    }
+
+    @Test
+    public void deveRetornarListaDePessoaPorNome(){
+
+        PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoa);
+        PessoaDTO resultServiceteste2 = service.postPessoa(jsonBodyPessoa);
+        RestAssured.defaultParser = Parser.JSON;
+        PessoaDTO[] resultService = service.buscarPessoasPorNome(resultServiceteste.getNome());
+
+        Assert.assertEquals(resultService[0].getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
+        Assert.assertEquals(resultService[resultService.length-1].getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
+
+        service.deletePessoa(resultServiceteste.getIdPessoa());
+        service.deletePessoa(resultServiceteste2.getIdPessoa());
+    }
+
+    @Test
+    public void deveRetornarListaDePessoaPorNomeInvalido(){
+
+        PessoaDTO[] resultService = service.buscarPessoasPorNome("HAHAHAHA");
+
+        assertThat(resultService, Matchers.is(Matchers.emptyArray()));
+    }
+
+    @Test
+    public void deveRetornarPessoaPorCpf(){
+
+        PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoa);
+        RestAssured.defaultParser = Parser.JSON;
+        PessoaDTO resultService = service.buscarPessoasPorCpf(resultServiceteste.getCpf());
+
+        Assert.assertEquals(resultService.getStatus(), "200");
+        Assert.assertEquals(resultService.getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
+
+        service.deletePessoa(resultServiceteste.getIdPessoa());
+    }
+
+    @Test
+    public void deveRetornarPessoaPorCpfMaisDeUmCpfIgual(){
+
+        PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoa);
+        PessoaDTO resultServiceteste2 = service.postPessoa(jsonBodyPessoa);
+        RestAssured.defaultParser = Parser.JSON;
+        ResponseDTO resultService = service.buscarPessoasPorCpf(resultServiceteste.getCpf());
+
+        Assert.assertEquals(resultService.getStatus(), "500");
+
+        service.deletePessoa(resultServiceteste.getIdPessoa());
+        service.deletePessoa(resultServiceteste2.getIdPessoa());
+    }
+
+    @Test
+    public void deveRetornarListaDePessoaPeriodoDataNascimento(){
+
+        PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoa);
+        PessoaDTO resultServiceteste2 = service.postPessoa(jsonBodyPessoa);
+        RestAssured.defaultParser = Parser.JSON;
+        PessoaDTO[] resultService = service.buscarPessoasPorDataNascimento("1999-09-09", "1999-09-09");
+
+        Assert.assertEquals(resultService[0].getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
+        Assert.assertEquals(resultService[resultService.length-1].getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
+
+        service.deletePessoa(resultServiceteste.getIdPessoa());
+        service.deletePessoa(resultServiceteste2.getIdPessoa());
     }
 
 //    @Test
@@ -96,11 +169,29 @@ public class PessoaAceitacaoTest {
     }
 
     @Test
+    public void deveAtualizarPessoaErrado(){
+
+        PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
+        RestAssured.defaultParser = Parser.JSON;
+        PessoaDTO resultService2 = service.putPessoa(jsonBodyPessoaErro, resultService.getIdPessoa());
+        Assert.assertEquals(resultService2.getStatus(), "400");
+
+        service.deletePessoa(resultService.getIdPessoa());
+    }
+
+    @Test
     public void deveDeletarPessoa(){
 
         PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
 
         Response resultService2 =  service.deletePessoa(resultService.getIdPessoa());
         Assert.assertEquals(resultService2.statusCode(), 200);
+    }
+
+    @Test
+    public void deveDeletarPessoaIdInexistente(){
+
+        Response resultService2 =  service.deletePessoa("987456321");
+        Assert.assertEquals(resultService2.statusCode(), 404);
     }
 }
