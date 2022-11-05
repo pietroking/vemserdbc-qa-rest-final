@@ -1,0 +1,16 @@
+{
+  "nome": "HARLEYQUINN",
+  "dataNascimento": "1999-09-09",
+  "cpf": "9999999999",
+  "email": "harley@hahaha.com",
+  "enderecos":[{
+      "tipo": "COMERCIAL",
+      "logradouro": "hahaha",
+      "numero": 666,
+      "complemento": "ap 666",
+      "cep": "66666666",
+      "cidade": "HAHAHAHA",
+      "estado": "HA",
+      "pais": "Brasil"
+    }]
+}

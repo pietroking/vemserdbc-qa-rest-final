@@ -13,4 +13,6 @@ public class ResponseDTO{
     private String status;
     private String message;
     private List<String> errors;
+    private String error;
+    private String path;
 }

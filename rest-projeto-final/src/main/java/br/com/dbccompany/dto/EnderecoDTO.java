@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties
-public class EnderecoDTO {
+public class EnderecoDTO extends PessoaDTO{
     private String idPessoa;
     private String tipo;
     private String logradouro;

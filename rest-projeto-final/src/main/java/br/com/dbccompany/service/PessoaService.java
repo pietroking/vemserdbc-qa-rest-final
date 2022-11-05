@@ -49,12 +49,90 @@ public class PessoaService {
         PageDTOPessoaDTO[] result =
                 given()
                         .header("Authorization", tokenAdm)
+
                 .when()
                         .get(baseUri + "/pessoa")
                 .then()
                         .log().all()
                         .statusCode(200)
                         .extract().as(PageDTOPessoaDTO[].class)
+                ;
+        return result;
+    }
+
+    public PessoaDTO[] buscarPessoasPorNome(String nome){
+
+        PessoaDTO[] result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .queryParam("nome", nome)
+                .when()
+                        .get(baseUri + "/pessoa/byname")
+                .then()
+                        .log().all()
+                        .statusCode(200)
+                        .extract().as(PessoaDTO[].class)
+                ;
+        return result;
+    }
+
+    public PessoaDTO buscarPessoasPorCpf(String cpf){
+
+        PessoaDTO result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .pathParam("cpf", cpf)
+                .when()
+                        .get(baseUri + "/pessoa/{cpf}/cpf")
+                .then()
+                        .log().all()
+                        .extract().as(PessoaDTO.class)
+                ;
+        return result;
+    }
+
+    public PessoaDTO[] buscarPessoasPorDataNascimento(String data, String dtFinal){
+
+        PessoaDTO[] result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .queryParam("data", data)
+                        .queryParam("dtFinal", dtFinal)
+                .when()
+                        .get(baseUri + "/pessoa/data-nascimento")
+                .then()
+                        .log().all()
+                        .extract().as(PessoaDTO[].class)
+                ;
+        return result;
+    }
+
+    public PessoaDTO[] buscarPessoasComEnderecos(String idPessoa){
+
+        PessoaDTO[] result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .queryParam("idPessoa", idPessoa)
+                .when()
+                        .get(baseUri + "/pessoa/lista-com-enderecos")
+                .then()
+                        .log().all()
+                        .extract().as(PessoaDTO[].class)
+                ;
+        return result;
+    }
+
+    public ResponseDTO buscarPessoasComEnderecosIdInexistente(String idPessoa){
+
+        ResponseDTO result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .queryParam("idPessoa", idPessoa)
+                .when()
+                        .get(baseUri + "/pessoa/lista-com-enderecos")
+                .then()
+                        .log().all()
+                        .extract().as(ResponseDTO.class)
                 ;
         return result;
     }
@@ -118,7 +196,6 @@ public class PessoaService {
                          .delete(baseUri + "/pessoa/{idPessoa}")
                  .then()
                          .log().all()
-                         .statusCode(200)
                          .extract().response()
                  ;
         return result;
