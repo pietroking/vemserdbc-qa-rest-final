@@ -62,7 +62,7 @@ public class EnderecoAceitacaoTeste {
         String paisTeste = "Brasil";
         EnderecoDTO[] resultService = service.pegarEnderecosPorPais(paisTeste);
         Assert.assertEquals(resultService[0].getPais(),paisTeste);
-        Assert.assertEquals(resultService[-1].getPais(),paisTeste);
+        Assert.assertEquals(resultService[resultService.length-1].getPais(),paisTeste);
     }
 
     @Test
