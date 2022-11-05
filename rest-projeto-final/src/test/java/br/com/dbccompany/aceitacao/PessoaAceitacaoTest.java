@@ -1,9 +1,7 @@
 package br.com.dbccompany.aceitacao;
 
-import br.com.dbccompany.dto.PageDTOPessoaDTO;
-import br.com.dbccompany.dto.PessoaDTO;
-import br.com.dbccompany.dto.RelatorioDTO;
-import br.com.dbccompany.dto.ResponseDTO;
+import br.com.dbccompany.dto.*;
+import br.com.dbccompany.service.EnderecoService;
 import br.com.dbccompany.service.PessoaService;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,6 +22,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class PessoaAceitacaoTest {
 
     PessoaService service = new PessoaService();
+    EnderecoService serviceEndereco = new EnderecoService();
 
     public PessoaAceitacaoTest() throws IOException {
     }
@@ -115,19 +114,40 @@ public class PessoaAceitacaoTest {
     }
 
     @Test
-    public void deveRetornarListaDePessoaPeriodoDataNascimento(){
+    public void deveRetornarListaDePessoaComEnderecos(){
 
-        PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoa);
-        PessoaDTO resultServiceteste2 = service.postPessoa(jsonBodyPessoa);
+        PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoaReplace);
         RestAssured.defaultParser = Parser.JSON;
-        PessoaDTO[] resultService = service.buscarPessoasPorDataNascimento("1999-09-09", "1999-09-09");
+        serviceEndereco.adicionarEndereco(resultServiceteste.getIdPessoa(), jsonBodyEndereco);
+        PessoaDTO[] resultService = service.buscarPessoasComEnderecos(resultServiceteste.getIdPessoa());
 
-        Assert.assertEquals(resultService[0].getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
-        Assert.assertEquals(resultService[resultService.length-1].getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
+        Assert.assertEquals(resultService[0].getEnderecos()[0].getCidade().toUpperCase(), "HAHAHAHA".toUpperCase());
 
         service.deletePessoa(resultServiceteste.getIdPessoa());
-        service.deletePessoa(resultServiceteste2.getIdPessoa());
     }
+
+    @Test
+    public void deveRetornarListaDePessoaComEnderecosComIdInexistente(){
+
+        ResponseDTO resultService = service.buscarPessoasComEnderecosIdInexistente("9999999");
+
+        Assert.assertEquals(resultService.getStatus(), "404");
+    }
+
+//    @Test
+//    public void deveRetornarListaDePessoaPeriodoDataNascimento(){
+//
+//        PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoa);
+//        PessoaDTO resultServiceteste2 = service.postPessoa(jsonBodyPessoa);
+//        RestAssured.defaultParser = Parser.JSON;
+//        PessoaDTO[] resultService = service.buscarPessoasPorDataNascimento("1999-09-09", "1999-09-09");
+//
+//        Assert.assertEquals(resultService[0].getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
+//        Assert.assertEquals(resultService[resultService.length-1].getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
+//
+//        service.deletePessoa(resultServiceteste.getIdPessoa());
+//        service.deletePessoa(resultServiceteste2.getIdPessoa());
+//    }
 
 //    @Test
 //    public void deveRetornarListaDePessoa(){

@@ -107,6 +107,36 @@ public class PessoaService {
         return result;
     }
 
+    public PessoaDTO[] buscarPessoasComEnderecos(String idPessoa){
+
+        PessoaDTO[] result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .queryParam("idPessoa", idPessoa)
+                .when()
+                        .get(baseUri + "/pessoa/lista-com-enderecos")
+                .then()
+                        .log().all()
+                        .extract().as(PessoaDTO[].class)
+                ;
+        return result;
+    }
+
+    public ResponseDTO buscarPessoasComEnderecosIdInexistente(String idPessoa){
+
+        ResponseDTO result =
+                given()
+                        .header("Authorization", tokenAdm)
+                        .queryParam("idPessoa", idPessoa)
+                .when()
+                        .get(baseUri + "/pessoa/lista-com-enderecos")
+                .then()
+                        .log().all()
+                        .extract().as(ResponseDTO.class)
+                ;
+        return result;
+    }
+
     public PessoaDTO postPessoa(String requstBody){
 
         PessoaDTO result =
