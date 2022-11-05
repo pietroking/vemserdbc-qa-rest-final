@@ -11,11 +11,8 @@ import io.restassured.response.Response;
 import static io.restassured.RestAssured.*;
 
 public class PessoaService {
-
     String baseUri = "http://vemser-dbc.dbccompany.com.br:39000/vemser/dbc-pessoa-api";
-
     String tokenAdm = new Login().authenticationAdmin();
-
     public RelatorioDTO[] buscarRealatorio(){
 
         RelatorioDTO[] result =

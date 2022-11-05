@@ -2,8 +2,6 @@ package br.com.dbccompany.service;
 
 import br.com.dbccompany.dto.LoginCreateDTO;
 import io.restassured.http.ContentType;
-import io.restassured.response.Response;
-
 import static io.restassured.RestAssured.*;
 
 public class AuthService {

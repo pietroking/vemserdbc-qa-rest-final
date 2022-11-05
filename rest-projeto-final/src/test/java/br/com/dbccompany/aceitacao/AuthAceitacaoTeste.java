@@ -3,10 +3,7 @@ package br.com.dbccompany.aceitacao;
 import br.com.dbccompany.service.AuthService;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-
-import static org.hamcrest.Matchers.*;
-
-public class authAceitacaoTeste {
+public class AuthAceitacaoTeste {
     AuthService service = new AuthService();
 
     @Test
