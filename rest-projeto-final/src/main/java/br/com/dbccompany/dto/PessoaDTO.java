@@ -10,7 +10,7 @@ public class PessoaDTO extends ResponseDTO{
     private String dataNascimento;
     private String cpf;
     private String email;
-    private String idPessoa;
+    private Integer idPessoa;
     private ContatoDTO[] contatos;
     private EnderecoDTO[] enderecos;
     public PessoaDTO(){

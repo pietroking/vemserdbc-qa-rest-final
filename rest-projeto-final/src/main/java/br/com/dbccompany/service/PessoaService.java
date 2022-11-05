@@ -28,7 +28,7 @@ public class PessoaService {
         return result;
     }
 
-    public RelatorioDTO[] buscarRealatorioPorId(String idPessoa){
+    public RelatorioDTO[] buscarRealatorioPorId(Integer idPessoa){
 
         RelatorioDTO[] result =
                 given()
@@ -91,7 +91,7 @@ public class PessoaService {
         return result;
     }
 
-    public PessoaDTO putPessoa(String requstBody, String idPessoa){
+    public PessoaDTO putPessoa(String requstBody, Integer idPessoa){
 
         PessoaDTO result =
                 given()
@@ -108,7 +108,7 @@ public class PessoaService {
         return result;
     }
 
-    public Response deletePessoa(String idPessoa){
+    public Response deletePessoa(Integer idPessoa){
 
          Response result =
                  (Response) given()

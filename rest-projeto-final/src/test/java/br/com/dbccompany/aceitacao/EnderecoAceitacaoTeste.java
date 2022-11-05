@@ -29,7 +29,6 @@ public class EnderecoAceitacaoTeste {
     @Test
     public void testarRetornarListaDeEnderecos(){
         Integer page = 0;
-        String token = login.authenticationAdmin();
         EnderecoListaDTO resultService = service.pegarEnderecos();
         Assert.assertTrue(resultService.getPage().equals(page));
     }
@@ -37,21 +36,18 @@ public class EnderecoAceitacaoTeste {
     @Test
     public void testarRetornarListaDeEnderecosPassandoPagina(){
         Integer page = 12;
-        String token = login.authenticationAdmin();
         EnderecoListaDTO resultService = service.pegarEnderecos(page);
         Assert.assertSame(resultService.getPage() ,page);
     }
     @Test
     public void testarRetornarListaDeEnderecosPassandoTamanhoDaPagina(){
         int pageSize = 10;
-        String token = login.authenticationAdmin();
         EnderecoListaDTO resultService = service.pegarEnderecos(pageSize);
         Assert.assertTrue(resultService.getSize().intValue() == pageSize);
     }
 
     @Test
-    public void testarpegarEnderecoPorPaisSemParametro(){
-        String token = login.authenticationAdmin();
+    public void testarPegarEnderecoPorPaisSemParametro(){
         Response resultService = service.pegarEnderecosPorPais();
         int code = 400;
         Assert.assertTrue(resultService.statusCode() == code);
@@ -72,7 +68,7 @@ public class EnderecoAceitacaoTeste {
         assertThat(resultService, Matchers.is(Matchers.emptyArray()) );
     }
 
-    //Adicionar Endereço dando erro 500
+    //Adicionar Endereço dando erro 500, está comentado pra não ficar criando novas pessoas indefinidamente
     @Test
     public void testarAdicionarEndereco() throws IOException {
     //    PessoaService servicePessoa = new PessoaService();
