@@ -66,7 +66,6 @@ public class PessoaAceitacaoTest {
 
     @Test
     public void deveAddPessoa(){
-
         PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
         RestAssured.defaultParser = Parser.JSON;
         Assert.assertEquals(resultService.getNome().toUpperCase(), "joker".toUpperCase());
