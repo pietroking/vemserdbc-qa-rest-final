@@ -26,13 +26,25 @@ public class ContatoService {
     public ContatoDTO[] pegarContatos(Integer idPessoa){
         ContatoDTO[] result =
             given()
-                    .pathParam("idPessoa",idPessoa)
+                .pathParam("idPessoa",idPessoa)
                 .header("Authorization", token)
             .when()
                 .get(baseUri+"/contato/{idPessoa}")
             .then()
                 .log().all()
                 .extract().as(ContatoDTO[].class);
+        return result;
+    }
+    public Response pegarContatoPorIdResponse(Integer idPessoa){
+        Response result =
+            given()
+                .pathParam("idPessoa",idPessoa)
+                .header("Authorization", token)
+            .when()
+                .get(baseUri+"/contato/{idPessoa}")
+            .then()
+                .log().all()
+                .extract().response();
         return result;
     }
 
@@ -65,16 +77,16 @@ public class ContatoService {
 
     public ContatoDTO editarContato(Integer idContato, String novoContato) {
         ContatoDTO result =
-                given()
-                        .contentType(ContentType.JSON)
-                        .body(novoContato)
-                        .pathParam("idContato", idContato)
-                        .header("Authorization", token)
-                        .when()
-                        .put(baseUri + "/contato/{idContato}")
-                        .then()
-                        .log().all()
-                        .extract().as(ContatoDTO.class);
+            given()
+                .contentType(ContentType.JSON)
+                .body(novoContato)
+                .pathParam("idContato", idContato)
+                .header("Authorization", token)
+            .when()
+                .put(baseUri + "/contato/{idContato}")
+            .then()
+                .log().all()
+                .extract().as(ContatoDTO.class);
         return result;
     }
 }

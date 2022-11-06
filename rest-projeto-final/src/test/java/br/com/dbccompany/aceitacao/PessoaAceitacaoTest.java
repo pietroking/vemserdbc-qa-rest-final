@@ -1,10 +1,9 @@
 package br.com.dbccompany.aceitacao;
 
 import br.com.dbccompany.dto.*;
+import br.com.dbccompany.service.ContatoService;
 import br.com.dbccompany.service.EnderecoService;
 import br.com.dbccompany.service.PessoaService;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
@@ -15,7 +14,6 @@ import org.testng.annotations.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.util.Arrays;
 
 import static org.hamcrest.MatcherAssert.assertThat;
 
@@ -38,35 +36,26 @@ public class PessoaAceitacaoTest {
 
     @Test
     public void deveRetornarRelatorioPessoa(){
-
         RelatorioDTO[] resultService = service.buscarRealatorio();
-
-    //    Assert.assertEquals(resultService[0].getNomePessoa().toUpperCase(), "Maicon Machado Gerardi".toUpperCase());
     }
 
     @Test
     public void deveRetornarRelatorioPessoaPorId(){
         PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
         RestAssured.defaultParser = Parser.JSON;
-
         RelatorioDTO[] resultService2 = service.buscarRealatorioPorId(resultService.getIdPessoa());
-
         Assert.assertEquals(resultService2[0].getNomePessoa().toUpperCase(), resultService.getNome().toUpperCase());
         service.deletePessoa(resultService.getIdPessoa());
     }
 
     @Test
     public void deveRetornarRelatorioPessoaPorIdInexistente(){
-
         RelatorioDTO[] resultService2 = service.buscarRealatorioPorId(99999);
         assertThat(resultService2,Matchers.is(Matchers.emptyArray()));
-
-//        Assert.assertEquals(resultService2[0].getNomePessoa().toUpperCase(), "Joker".toUpperCase());
     }
 
     @Test
     public void deveRetornarListaDePessoaPorNome(){
-
         PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoa);
         PessoaDTO resultServiceteste2 = service.postPessoa(jsonBodyPessoa);
         RestAssured.defaultParser = Parser.JSON;
@@ -81,22 +70,15 @@ public class PessoaAceitacaoTest {
 
     @Test
     public void deveRetornarListaDePessoaPorNomeInvalido(){
-
         PessoaDTO[] resultService = service.buscarPessoasPorNome("HAHAHAHA");
-
         assertThat(resultService, Matchers.is(Matchers.emptyArray()));
     }
 
     @Test
     public void deveRetornarPessoaPorCpf(){
-
         PessoaDTO resultServiceteste = service.postPessoa(jsonBodyPessoa);
-        RestAssured.defaultParser = Parser.JSON;
         PessoaDTO resultService = service.buscarPessoasPorCpf(resultServiceteste.getCpf());
-
-//        Assert.assertEquals(resultService.getStatus(), "200");
         Assert.assertEquals(resultService.getNome().toUpperCase(), resultServiceteste.getNome().toUpperCase());
-
         service.deletePessoa(resultServiceteste.getIdPessoa());
     }
 
@@ -129,9 +111,7 @@ public class PessoaAceitacaoTest {
 
     @Test
     public void deveRetornarListaDePessoaComEnderecosComIdInexistente(){
-
         ResponseDTO resultService = service.buscarPessoasComEnderecosIdInexistente(9999999);
-
         Assert.assertEquals(resultService.getStatus(), "404");
     }
 
@@ -150,60 +130,94 @@ public class PessoaAceitacaoTest {
 //        service.deletePessoa(resultServiceteste2.getIdPessoa());
 //    }
 
-//    @Test
-//    public void deveRetornarListaDePessoa(){
-//
-//        PageDTOPessoaDTO[] resultService = service.buscarPessoas();
-//
-//        Assert.assertEquals(resultService, "Maicon Machado Gerardi".toUpperCase());
-//    }
+    @Test
+    public void deveRetornarListaDePessoa(){
 
+        PageDTOPessoaDTO[] resultService = service.buscarPessoas();
+
+        Assert.assertEquals(resultService, "Maicon Machado Gerardi".toUpperCase());
+    }
+
+    @Test
+    public void deveRetornarPessoaComListaCompleta() throws IOException {
+        // Instanciando serviço de Contatos e Endereços
+        ContatoService serviceContato = new ContatoService();
+        EnderecoService serviceEndereco = new EnderecoService();
+        //Adicionando Pessoa no banco de dados
+        PessoaDTO resultServicePessoaAdd = service.postPessoa(jsonBodyPessoa);
+        Assert.assertEquals(resultServicePessoaAdd.getNome().toUpperCase(), "joker".toUpperCase());
+        // Adicionando Contato
+        ContatoDTO resultServiceContatoAdd = serviceContato
+                .criarContato(resultServicePessoaAdd.getIdPessoa(),jsonBodyContato);
+        // Adicionando Endereco
+        EnderecoDTO resultServiceEnderecoAdd = serviceEndereco
+                .adicionarEndereco(resultServicePessoaAdd.getIdPessoa(),jsonBodyEndereco);
+        //Testando Get:
+        PessoaDTO[] resultServicePessoaGet = service
+                .buscarPessoaListaCompleta(resultServicePessoaAdd.getIdPessoa());
+        Assert.assertEquals(resultServicePessoaGet[0].getContatos()[0].getIdContato()
+                ,resultServiceContatoAdd.getIdContato());
+        Assert.assertEquals(resultServicePessoaGet[0].getEnderecos()[0].getLogradouro(),
+                resultServiceEnderecoAdd.getLogradouro());
+        //Limpando dados do servidor
+        Response resultServicePessoaDelete = service.deletePessoa(resultServicePessoaAdd.getIdPessoa());
+    }
+
+    @Test
+    public void deveRetornarPessoaComContatos() throws IOException{
+        // Instanciando serviço de Contatos e Endereços
+        ContatoService serviceContato = new ContatoService();
+        //Adicionando Pessoa no banco de dados
+        PessoaDTO resultServicePessoaAdd = service.postPessoa(jsonBodyPessoa);
+        Assert.assertEquals(resultServicePessoaAdd.getNome().toUpperCase(), "joker".toUpperCase());
+        // Adicionando Contato
+        ContatoDTO resultServiceContatoAdd = serviceContato
+                .criarContato(resultServicePessoaAdd.getIdPessoa(),jsonBodyContato);
+        //Testando Get:
+        PessoaDTO[] resultServicePessoaGet = service
+                .buscarPessoaContato(resultServicePessoaAdd.getIdPessoa());
+        Assert.assertEquals(resultServicePessoaGet[0].getContatos()[0].getIdContato()
+                ,resultServiceContatoAdd.getIdContato());
+        //Limpando dados do servidor
+        Response resultServicePessoaDelete = service.deletePessoa(resultServicePessoaAdd.getIdPessoa());
+    }
     @Test
     public void deveAddPessoa(){
         PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
         RestAssured.defaultParser = Parser.JSON;
         Assert.assertEquals(resultService.getNome().toUpperCase(), "joker".toUpperCase());
-
         service.deletePessoa(resultService.getIdPessoa());
     }
 
     @Test
     public void deveAddPessoaSemNome(){
-
         ResponseDTO resultService = service.postPessoaError(jsonBodyPessoaErro);
         RestAssured.defaultParser = Parser.JSON;
-
         Assert.assertEquals(resultService.getStatus(), "400");
         assertThat(resultService.getErrors().size(), Matchers.is(1));
     }
 
     @Test
     public void deveAtualizarPessoa(){
-
         PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
         RestAssured.defaultParser = Parser.JSON;
         PessoaDTO resultService2 = service.putPessoa(jsonBodyPessoaReplace, resultService.getIdPessoa());
         Assert.assertEquals(resultService2.getNome().toUpperCase(), "harleyquinn".toUpperCase());
-
         service.deletePessoa(resultService.getIdPessoa());
     }
 
     @Test
     public void deveAtualizarPessoaErrado(){
-
         PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
         RestAssured.defaultParser = Parser.JSON;
         PessoaDTO resultService2 = service.putPessoa(jsonBodyPessoaErro, resultService.getIdPessoa());
         Assert.assertEquals(resultService2.getStatus(), "400");
-
         service.deletePessoa(resultService.getIdPessoa());
     }
 
     @Test
     public void deveDeletarPessoa(){
-
         PessoaDTO resultService = service.postPessoa(jsonBodyPessoa);
-
         Response resultService2 =  service.deletePessoa(resultService.getIdPessoa());
         Assert.assertEquals(resultService2.statusCode(), 200);
     }

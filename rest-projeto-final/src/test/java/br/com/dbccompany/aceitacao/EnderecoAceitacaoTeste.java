@@ -24,6 +24,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 public class EnderecoAceitacaoTeste {
     Login login = new Login();
     EnderecoService service = new EnderecoService();
+    int SC_OK = 200;
 
     public String lerJson(String caminhoJson) throws IOException {
         return new String(Files.readAllBytes(Paths.get(caminhoJson)));
@@ -54,6 +55,11 @@ public class EnderecoAceitacaoTeste {
         Response resultService = service.pegarEnderecosPorPais();
         int code = 400;
         Assert.assertTrue(resultService.statusCode() == code);
+    }
+    @Test
+    public void testarPegarEnderecoPorIdPessoaSemParametro(){
+        Response resultService = service.pegarEnderecosPorIdPessoa();
+        Assert.assertFalse(resultService.statusCode() == SC_OK);
     }
 
     @Test
@@ -134,4 +140,32 @@ public class EnderecoAceitacaoTeste {
                 .deletePessoa(resultServicePessoaAdd.getIdPessoa());
         Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
     }
+
+    @Test
+    public void testarDeletarEndereco() throws IOException{
+        // Criando pessoa no banco de dados
+        PessoaService servicePessoa = new PessoaService();
+        String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
+        PessoaDTO resultServicePessoaAdd = servicePessoa.postPessoa(jsonBodyPessoa);
+        Assert.assertEquals(resultServicePessoaAdd.getNome().toUpperCase(), "joker".toUpperCase());
+        // Criando 2 Endereços no banco de dados
+        String jsonBodyEndereco = lerJson("src/test/resources/data/enderecoTest.json");
+        EnderecoDTO resultServiceEnderecoAdd = service
+                .adicionarEndereco(resultServicePessoaAdd.getIdPessoa(),jsonBodyEndereco);
+        EnderecoDTO resultServiceEnderecoAdd2 = service
+                .adicionarEndereco(resultServicePessoaAdd.getIdPessoa(),jsonBodyEndereco);
+        // Deletando um dos endereços
+        Response resultServiceEnderecoDelete = service
+                .removerEndereco(resultServiceEnderecoAdd.getIdEndereco());
+        Assert.assertEquals(resultServiceEnderecoDelete.getStatusCode(),SC_OK);
+        //Verificando se o outro contato persiste no banco
+        EnderecoDTO[] resultServiceEnderecoGet = service
+                .pegarEnderecosPorIdPessoa(resultServicePessoaAdd.getIdPessoa());
+        assertThat(resultServiceEnderecoGet,Matchers.is(Matchers.arrayWithSize(1)));
+        //limpando banco de dados
+        Response resultServicePessoaDelete =  servicePessoa
+                .deletePessoa(resultServicePessoaAdd.getIdPessoa());
+        Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
+    }
+
 }

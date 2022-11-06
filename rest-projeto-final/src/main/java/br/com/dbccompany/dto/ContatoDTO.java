@@ -5,7 +5,7 @@ import lombok.Data;
 
 @Data
 @JsonIgnoreProperties
-public class ContatoDTO {
+public class ContatoDTO extends ResponseDTO{
 
     private Integer idPessoa;
     private String tipoContato;

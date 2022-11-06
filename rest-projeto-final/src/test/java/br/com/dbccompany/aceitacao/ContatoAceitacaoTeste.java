@@ -50,7 +50,6 @@ public class ContatoAceitacaoTeste {
         Assert.assertTrue(resultServicePessoaDelete.getStatusCode() == SC_OK);
     }
 
-
     @Test
     public void testarPegarContatoPorIdPessoa() throws IOException {
         //Pegando Massas de dados:
@@ -71,11 +70,15 @@ public class ContatoAceitacaoTeste {
         ContatoDTO[] resultServiceContatoGet = service.pegarContatos(resultServicePessoaAdd.getIdPessoa());
         assertThat(resultServiceContatoGet, Matchers.hasItemInArray(resultServiceContatoAdd2));
         assertThat(resultServiceContatoGet,Matchers.hasItemInArray(resultServiceContatoAdd));
-
         //Deletando Pessoa do banco de dados
         Response resultServicePessoaDelete = servicePessoa.deletePessoa(resultServicePessoaAdd.getIdPessoa());
         Assert.assertTrue(resultServicePessoaDelete.getStatusCode() == SC_OK);
+    }
 
+    @Test
+    public void testarPegarContatoPorIdPessoaInexistente(){
+        Response resultService = service.pegarContatoPorIdResponse(999999999);
+        Assert.assertFalse(resultService.statusCode() == SC_OK);
     }
 
     @Test

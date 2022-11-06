@@ -1,9 +1,6 @@
 package br.com.dbccompany.service;
 
-import br.com.dbccompany.dto.PageDTOPessoaDTO;
-import br.com.dbccompany.dto.PessoaDTO;
-import br.com.dbccompany.dto.RelatorioDTO;
-import br.com.dbccompany.dto.ResponseDTO;
+import br.com.dbccompany.dto.*;
 import br.com.dbccompany.utils.Login;
 import io.restassured.http.ContentType;
 import io.restassured.response.Response;
@@ -49,7 +46,6 @@ public class PessoaService {
         PageDTOPessoaDTO[] result =
                 given()
                         .header("Authorization", tokenAdm)
-
                 .when()
                         .get(baseUri + "/pessoa")
                 .then()
@@ -198,6 +194,55 @@ public class PessoaService {
                          .log().all()
                          .extract().response()
                  ;
+        return result;
+    }
+
+    public PessoaDTO[] buscarPessoaListaCompleta(Integer idPessoa){
+        PessoaDTO[] result =
+            given()
+                .header("Authorization", tokenAdm)
+                    .queryParam("idPessoa",idPessoa)
+            .when()
+                .get(baseUri+"/pessoa/lista-completa")
+            .then()
+                .log().all()
+                    .extract().as(PessoaDTO[].class);
+        return result;
+    }
+
+    public PessoaDTO[] buscarPessoaListaCompleta(){
+        PessoaDTO[] result =
+            given()
+                .header("Authorization", tokenAdm)
+            .when()
+                .get(baseUri+"/pessoa/lista-completa")
+            .then()
+                .log().all()
+                .extract().as(PessoaDTO[].class);
+        return result;
+    }
+    public PessoaDTO[] buscarPessoaContato(Integer idPessoa){
+        PessoaDTO[] result =
+            given()
+                .header("Authorization", tokenAdm)
+                .queryParam("idPessoa",idPessoa)
+            .when()
+                .get(baseUri+"/pessoa/lista-com-contatos")
+            .then()
+                .log().all()
+                .extract().as(PessoaDTO[].class);
+        return result;
+    }
+
+    public PessoaDTO[] buscarPessoaContato(){
+        PessoaDTO[] result =
+            given()
+                .header("Authorization", tokenAdm)
+            .when()
+                .get(baseUri+"/pessoa/lista-com-contatos")
+            .then()
+                .log().all()
+                .extract().as(PessoaDTO[].class);
         return result;
     }
 

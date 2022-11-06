@@ -129,7 +129,7 @@ public class EnderecoService {
         Response result =
         given()
             .header("Authorization", token)
-            .pathParam("idPessoa",idEndereco)
+            .pathParam("idEndereco",idEndereco)
         .when()
             .delete(baseUri+"/endereco/{idEndereco}")
         .then()
