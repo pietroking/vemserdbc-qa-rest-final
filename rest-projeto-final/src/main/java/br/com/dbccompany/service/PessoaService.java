@@ -107,7 +107,7 @@ public class PessoaService {
         return result;
     }
 
-    public PessoaDTO[] buscarPessoasComEnderecos(String idPessoa){
+    public PessoaDTO[] buscarPessoasComEnderecos(Integer idPessoa){
 
         PessoaDTO[] result =
                 given()
@@ -122,7 +122,7 @@ public class PessoaService {
         return result;
     }
 
-    public ResponseDTO buscarPessoasComEnderecosIdInexistente(String idPessoa){
+    public ResponseDTO buscarPessoasComEnderecosIdInexistente(Integer idPessoa){
 
         ResponseDTO result =
                 given()

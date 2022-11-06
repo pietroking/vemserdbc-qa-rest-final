@@ -48,9 +48,23 @@ public class EnderecoService {
         return result;
     }
 
+    public EnderecoDTO pegarEnderecoPorIdEndereco(Integer idEndereco){
+        EnderecoDTO result =
+            given()
+                .header("Authorization", token)
+                .pathParam("idEndereco",idEndereco)
+            .when()
+                .get(baseUri+"/endereco/{idEndereco}")
+            .then()
+                .log().all()
+                .extract().as(EnderecoDTO.class)
+            ;
+        return result;
+    }
+
     public Response pegarEnderecosPorPais(){
             Response result =
-                (Response) given()
+                given()
                     .header("Authorization", token)
                 .when()
                     .get(baseUri+"/endereco/retorna-por-pais")
@@ -73,7 +87,7 @@ public class EnderecoService {
 
     public Response pegarEnderecosPorIdPessoa(){
         Response result =
-            (Response) given()
+            given()
                 .header("Authorization", token)
             .when()
                 .get(baseUri+"/endereco/retorna-por-id-pessoa")
@@ -89,13 +103,13 @@ public class EnderecoService {
                 .header("Authorization", token)
                 .queryParam("idPessoa",idPessoa)
             .when()
-                .get(baseUri+"/endereco/retorna-por-pais")
+                .get(baseUri+"/endereco/retorna-por-id-pessoa")
             .then()
                 .log().all()
                 .extract().as(EnderecoDTO[].class);
         return result;
     }
-    public EnderecoDTO adicionarEndereco(String idPessoa,String body){
+    public EnderecoDTO adicionarEndereco(Integer idPessoa,String body){
         EnderecoDTO result =
             given()
                 .contentType(ContentType.JSON)
@@ -111,7 +125,7 @@ public class EnderecoService {
             ;
         return result;
     }
-    public Response removerEndereco(String idEndereco){
+    public Response removerEndereco(Integer idEndereco){
         Response result =
         given()
             .header("Authorization", token)

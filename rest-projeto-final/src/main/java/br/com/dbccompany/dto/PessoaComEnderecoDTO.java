@@ -10,6 +10,6 @@ public class PessoaComEnderecoDTO extends EnderecoDTO {
     private String dataNascimento;
     private String cpf;
     private String email;
-    private String idPessoa;
+    private Integer idPessoa;
     private EnderecoDTO[] enderecos;
 }

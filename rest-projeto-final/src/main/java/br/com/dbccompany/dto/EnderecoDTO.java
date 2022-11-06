@@ -6,7 +6,7 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties
 public class EnderecoDTO extends PessoaDTO{
-    private String idPessoa;
+    private Integer idPessoa;
     private String tipo;
     private String logradouro;
     private String numero;
@@ -15,5 +15,5 @@ public class EnderecoDTO extends PessoaDTO{
     private String cidade;
     private String estado;
     private String pais;
-    private String idEndereco;
+    private Integer idEndereco;
 }

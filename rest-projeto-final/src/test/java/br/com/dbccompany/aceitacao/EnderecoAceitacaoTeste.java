@@ -5,8 +5,11 @@ import br.com.dbccompany.dto.PessoaDTO;
 import br.com.dbccompany.service.EnderecoService;
 import br.com.dbccompany.service.PessoaService;
 import br.com.dbccompany.utils.Login;
+import io.restassured.RestAssured;
+import io.restassured.parsing.Parser;
 import io.restassured.response.Response;
 import org.hamcrest.Matchers;
+import org.hamcrest.core.Every;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 
@@ -68,28 +71,67 @@ public class EnderecoAceitacaoTeste {
         assertThat(resultService, Matchers.is(Matchers.emptyArray()) );
     }
 
-    //Adicionar Endereço dando erro 500, está comentado pra não ficar criando novas pessoas indefinidamente
     @Test
     public void testarAdicionarEndereco() throws IOException {
-    //    PessoaService servicePessoa = new PessoaService();
-    //    String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
-    //    PessoaDTO resultServicePessoa = servicePessoa.postPessoa(jsonBodyPessoa);
-    //    Assert.assertEquals(resultServicePessoa.getNome().toUpperCase(), "joker".toUpperCase());
-    //    String jsonBodyEndereco = lerJson("src/test/resources/data/enderecoTest.json");
-    //    EnderecoDTO resultService = service.adicionarEndereco(resultServicePessoa.getIdPessoa(),jsonBodyEndereco);
-    //    Assert.assertTrue(resultService.getIdPessoa().equals(resultServicePessoa.getIdPessoa()));
-    //    Assert.assertEquals(resultService.getPais(),"Brasil");
-    //    Response resultServiceDelete = service.removerEndereco(resultService.getIdEndereco());
-    //    Assert.assertEquals(resultServiceDelete.statusCode(), 200);
-    //    Response resultServicePessoaDelete =  servicePessoa.deletePessoa(resultService.getIdPessoa());
-    //    Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
-
+        // Criando pessoa no banco de dados
+        PessoaService servicePessoa = new PessoaService();
+        String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
+        PessoaDTO resultServicePessoa = servicePessoa.postPessoa(jsonBodyPessoa);
+        Assert.assertEquals(resultServicePessoa.getNome().toUpperCase(), "joker".toUpperCase());
+        // Criando Endereço no banco de dados
+        String jsonBodyEndereco = lerJson("src/test/resources/data/enderecoTest.json");
+        EnderecoDTO resultService = service.adicionarEndereco(resultServicePessoa.getIdPessoa(),jsonBodyEndereco);
+        Assert.assertTrue(resultService.getIdPessoa().equals(resultServicePessoa.getIdPessoa()));
+        Assert.assertEquals(resultService.getPais(),"Brasil");
+        //Limpando banco de dados:
+        Response resultServicePessoaDelete =  servicePessoa.deletePessoa(resultService.getIdPessoa());
+        Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
     }
 
     @Test
-    public void testarPegarEnderecoPorIdPessoa(){
-        String token = login.authenticationAdmin();
-
+    public void testarPegarEnderecoPorIdPessoa() throws IOException{
+        // Criando pessoa no banco de dados
+        PessoaService servicePessoa = new PessoaService();
+        String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
+        PessoaDTO resultServicePessoa = servicePessoa.postPessoa(jsonBodyPessoa);
+        Assert.assertEquals(resultServicePessoa.getNome().toUpperCase(), "joker".toUpperCase());
+        // Criando Endereços no banco de dados
+        String jsonBodyEndereco = lerJson("src/test/resources/data/enderecoTest.json");
+        EnderecoDTO resultService = service.adicionarEndereco(resultServicePessoa.getIdPessoa(),jsonBodyEndereco);
+        EnderecoDTO resultService2 = service.adicionarEndereco(resultServicePessoa.getIdPessoa(),jsonBodyEndereco);
+        // Pegando endereco utilizando id pessoa
+        EnderecoDTO[] resultServiceGet = service.pegarEnderecosPorIdPessoa(resultServicePessoa.getIdPessoa());
+        assertThat(resultServiceGet,Matchers.is(Matchers.arrayWithSize(2)));
+        assertThat(resultServiceGet[0].getPais(),Matchers.is("Brasil"));
+        //Limpando banco de dados:
+        Response resultServicePessoaDelete =  servicePessoa.deletePessoa(resultService.getIdPessoa());
+        Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
     }
 
+    @Test
+    public void testarPegarEnderecoPorIdEndereco() throws IOException{
+        // Criando pessoa no banco de dados
+        PessoaService servicePessoa = new PessoaService();
+        String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
+        PessoaDTO resultServicePessoaAdd = servicePessoa.postPessoa(jsonBodyPessoa);
+        Assert.assertEquals(resultServicePessoaAdd.getNome().toUpperCase(), "joker".toUpperCase());
+        // Criando Endereços no banco de dados
+        String jsonBodyEndereco = lerJson("src/test/resources/data/enderecoTest.json");
+        EnderecoDTO resultServiceEnderecoAdd = service
+                .adicionarEndereco(resultServicePessoaAdd.getIdPessoa(),jsonBodyEndereco);
+        EnderecoDTO resultServiceEnderecoAdd2 = service
+                .adicionarEndereco(resultServicePessoaAdd.getIdPessoa(),jsonBodyEndereco);
+        // testando pegar endereco pelo id dele
+        EnderecoDTO resultServiceEnderecoGet = service
+                .pegarEnderecoPorIdEndereco(resultServiceEnderecoAdd.getIdEndereco());
+        EnderecoDTO resultServiceEnderecoGet2 = service
+                .pegarEnderecoPorIdEndereco(resultServiceEnderecoAdd2.getIdEndereco());
+        Assert.assertEquals(resultServiceEnderecoGet.getCep(),resultServiceEnderecoAdd.getCep());
+        Assert.assertEquals(resultServiceEnderecoGet2.getLogradouro(),
+                resultServiceEnderecoAdd2.getLogradouro());
+        // limpando banco de dados
+        Response resultServicePessoaDelete =  servicePessoa
+                .deletePessoa(resultServicePessoaAdd.getIdPessoa());
+        Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
+    }
 }

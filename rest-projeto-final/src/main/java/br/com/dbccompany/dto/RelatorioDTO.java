@@ -7,7 +7,7 @@ import lombok.Data;
 @JsonIgnoreProperties
 public class RelatorioDTO {
 
-    private String idPessoa;
+    private Integer idPessoa;
     private String nomePessoa;
     private String email;
     private String nomePet;
