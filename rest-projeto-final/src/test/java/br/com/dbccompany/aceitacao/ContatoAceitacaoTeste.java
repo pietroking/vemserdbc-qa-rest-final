@@ -2,6 +2,7 @@ package br.com.dbccompany.aceitacao;
 
 import br.com.dbccompany.dto.ContatoDTO;
 import br.com.dbccompany.dto.PessoaDTO;
+import br.com.dbccompany.dto.ResponseDTO;
 import br.com.dbccompany.service.ContatoService;
 import br.com.dbccompany.service.PessoaService;
 import io.restassured.RestAssured;
@@ -31,6 +32,11 @@ public class ContatoAceitacaoTeste {
     }
 
     @Test
+    public void testarPegarContatosSemAuth(){
+        Response resultService = service.pegarContatosSemAuth();
+        assertThat(resultService.statusCode(),Matchers.is(403));
+    }
+    @Test
     public void testarAdicionarContato() throws IOException {
         //Pegando Massas de dados:
         String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
@@ -47,6 +53,12 @@ public class ContatoAceitacaoTeste {
         //Deletando Pessoa do banco de dados
         Response resultServicePessoaDelete = servicePessoa.deletePessoa(resultServicePessoaAdd.getIdPessoa());
         Assert.assertTrue(resultServicePessoaDelete.getStatusCode() == SC_OK);
+    }
+    @Test
+    public void testarAdicionarContatoIdPessoaInvalido() throws IOException {
+        String jsonBodyContato = lerJson("src/test/resources/data/contatoTest.json");
+        ContatoDTO resultService = service.criarContato(17648712,jsonBodyContato);
+        assertThat(resultService.getStatus(),Matchers.is("404"));
     }
 
     @Test
@@ -108,6 +120,12 @@ public class ContatoAceitacaoTeste {
     }
 
     @Test
+    public void testarDeletarContatoIdInexistente(){
+        ResponseDTO resultService = service.deletarContato(2143628746).body().as(ResponseDTO.class);
+        assertThat(resultService.getStatus(),Matchers.is("404"));
+    }
+
+    @Test
     public void testarEditarContato() throws IOException{
         //Pegando Massas de dados:
         String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
@@ -136,6 +154,13 @@ public class ContatoAceitacaoTeste {
         //Limpando Banco de dados Excluindo Pessoa
         Response resultServicePessoaDelete = servicePessoa.deletePessoa(resultServicePessoaAdd.getIdPessoa());
         Assert.assertTrue(resultServicePessoaDelete.getStatusCode() == SC_OK);
+    }
+
+    @Test
+    public void testarEditarContatoComIdsInvalidos() throws IOException {
+        String jsonBodyContato = lerJson("src/test/resources/data/contatoTest.json");
+        ContatoDTO resultService = service.editarContato(152456712,jsonBodyContato);
+        assertThat(resultService.getStatus(),Matchers.is("404"));
     }
 
 

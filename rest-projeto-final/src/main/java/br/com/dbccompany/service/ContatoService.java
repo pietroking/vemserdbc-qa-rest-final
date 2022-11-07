@@ -23,6 +23,16 @@ public class ContatoService {
                 .extract().as(ContatoDTO[].class);
         return result;
     }
+    public Response pegarContatosSemAuth(){
+        Response result =
+            given()
+            .when()
+                .get(baseUri+"/contato")
+            .then()
+                .log().all()
+                .extract().response();
+        return result;
+    }
     public ContatoDTO[] pegarContatos(Integer idPessoa){
         ContatoDTO[] result =
             given()
