@@ -41,17 +41,15 @@ public class PessoaService {
         return result;
     }
 
-    public PageDTOPessoaDTO[] buscarPessoas(){
-
-        PageDTOPessoaDTO[] result =
+    public PageDTOPessoaDTO buscarPessoas(){
+        PageDTOPessoaDTO result =
                 given()
                         .header("Authorization", tokenAdm)
                 .when()
-                        .get(baseUri + "/pessoa")
+                    .get(baseUri + "/pessoa")
                 .then()
-                        .log().all()
-                        .statusCode(200)
-                        .extract().as(PageDTOPessoaDTO[].class)
+                    .log().all()
+                    .extract().as(PageDTOPessoaDTO.class)
                 ;
         return result;
     }

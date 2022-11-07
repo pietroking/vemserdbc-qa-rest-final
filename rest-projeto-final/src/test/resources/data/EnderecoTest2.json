@@ -1,0 +1,11 @@
+{
+  "idPessoa": 0,
+  "tipo": "Residencial",
+  "logradouro": "hahaha",
+  "numero": 666,
+  "complemento": "ap 666",
+  "cep": "66666666",
+  "cidade": "Buenos Aires",
+  "estado": "Buenos Aires",
+  "pais": "Argentina"
+}

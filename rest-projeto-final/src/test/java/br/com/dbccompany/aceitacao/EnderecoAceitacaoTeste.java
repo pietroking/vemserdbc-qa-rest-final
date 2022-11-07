@@ -2,6 +2,7 @@ package br.com.dbccompany.aceitacao;
 import br.com.dbccompany.dto.EnderecoDTO;
 import br.com.dbccompany.dto.EnderecoListaDTO;
 import br.com.dbccompany.dto.PessoaDTO;
+import br.com.dbccompany.dto.ResponseDTO;
 import br.com.dbccompany.service.EnderecoService;
 import br.com.dbccompany.service.PessoaService;
 import br.com.dbccompany.utils.Login;
@@ -37,6 +38,11 @@ public class EnderecoAceitacaoTeste {
         Assert.assertTrue(resultService.getPage().equals(page));
     }
 
+    @Test
+    public void testarRetornarListadeEnderecosSemAuth(){
+        Response resultService = service.pegarEnderecosSemAuth();
+        Assert.assertFalse(resultService.statusCode() == SC_OK);
+    }
     @Test
     public void testarRetornarListaDeEnderecosPassandoPagina(){
         Integer page = 12;
@@ -95,6 +101,43 @@ public class EnderecoAceitacaoTeste {
     }
 
     @Test
+    public void testarAdicionarEnderecoIdPessoaInvalido() throws IOException {
+        String jsonBodyEndereco = lerJson("src/test/resources/data/enderecoTest.json");
+        EnderecoDTO resultService = service.adicionarEndereco(8238114,jsonBodyEndereco);
+        assertThat(resultService.getStatus(), Matchers.is("404"));
+    }
+
+    @Test
+    public void testarEditarEndereco() throws IOException{
+        // Criando pessoa no banco de dados
+        PessoaService servicePessoa = new PessoaService();
+        String jsonBodyPessoa = lerJson("src/test/resources/data/pessoaTest.json");
+        PessoaDTO resultServicePessoa = servicePessoa.postPessoa(jsonBodyPessoa);
+        Assert.assertEquals(resultServicePessoa.getNome().toUpperCase(), "joker".toUpperCase());
+        // Criando Endereço no banco de dados
+        String jsonBodyEndereco = lerJson("src/test/resources/data/enderecoTest.json");
+        EnderecoDTO resultServiceEnderecoAdd = service.adicionarEndereco(resultServicePessoa.getIdPessoa(),jsonBodyEndereco);
+        Assert.assertEquals(resultServiceEnderecoAdd.getPais(),"Brasil");
+        // Editando endereço:
+        EnderecoDTO payload = new EnderecoDTO(resultServicePessoa.getIdPessoa(),"COMERCIAL",
+                "Rua Tal", "123","Ali perto", "78782828",
+                "Buenos Aires","Buenos Aires","Argentina");
+        EnderecoDTO resultService = service
+                .editarEndereco(resultServiceEnderecoAdd.getIdEndereco(), payload).body().as(EnderecoDTO.class);
+        assertThat(resultService.getPais(), Matchers.is("Argentina"));
+        //Limpando dados:
+        Response resultServicePessoaDelete = servicePessoa.deletePessoa(resultServicePessoa.getIdPessoa());
+        Assert.assertEquals(resultServicePessoaDelete.statusCode(),SC_OK);
+    }
+    @Test
+    public void  testarEditarEnderecoIdsInvalidos(){
+        EnderecoDTO payload = new EnderecoDTO(184812,"COMERCIAL",
+                "Rua Tal", "123","Ali perto", "78782828",
+                "Buenos Aires","Buenos Aires","Argentina");
+        EnderecoDTO resultService = service.editarEndereco(98123213, payload).body().as(EnderecoDTO.class);
+        assertThat(resultService.getStatus(), Matchers.is("404"));
+    }
+    @Test
     public void testarPegarEnderecoPorIdPessoa() throws IOException{
         // Criando pessoa no banco de dados
         PessoaService servicePessoa = new PessoaService();
@@ -112,6 +155,12 @@ public class EnderecoAceitacaoTeste {
         //Limpando banco de dados:
         Response resultServicePessoaDelete =  servicePessoa.deletePessoa(resultService.getIdPessoa());
         Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
+    }
+    @Test
+    public void testarPegarEnderecoPorIdPessoaInválido(){
+        Response resultService = service.pegarEnderecosPorIdPessoaResult(994129939);
+        assertThat(resultService.body().as(EnderecoDTO[].class),Matchers.is(Matchers.emptyArray()) );
+        //Assert.assertFalse(resultService.getStatusCode() == SC_OK);
     }
 
     @Test
@@ -140,7 +189,11 @@ public class EnderecoAceitacaoTeste {
                 .deletePessoa(resultServicePessoaAdd.getIdPessoa());
         Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
     }
-
+    @Test
+    public void testarPegarEnderecoPorIdEnderecoInvalido(){
+        EnderecoDTO resultService = service.pegarEnderecoPorIdEndereco(991291);
+        assertThat(resultService.getStatus(),Matchers.is(Matchers.notNullValue()));
+    }
     @Test
     public void testarDeletarEndereco() throws IOException{
         // Criando pessoa no banco de dados
@@ -167,5 +220,13 @@ public class EnderecoAceitacaoTeste {
                 .deletePessoa(resultServicePessoaAdd.getIdPessoa());
         Assert.assertEquals(resultServicePessoaDelete.statusCode(), 200);
     }
+
+    @Test
+    public void testarDeletarEnderecoIdInvalido(){
+        ResponseDTO resultService = service.removerEndereco(291312794).body().as(ResponseDTO.class);
+        assertThat(resultService.getStatus(), Matchers.is("404"));
+    }
+
+
 
 }

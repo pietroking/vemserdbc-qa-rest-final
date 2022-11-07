@@ -6,10 +6,9 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties
 public class PageDTOPessoaDTO{
-
-    private String totalElements;
-    private String totalPages;
-    private String page;
-    private String size;
+    private Integer totalElements;
+    private Integer totalPages;
+    private Integer page;
+    private Integer size;
     private PessoaDTO[] content;
 }

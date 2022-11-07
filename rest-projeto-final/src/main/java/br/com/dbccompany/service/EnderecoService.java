@@ -22,6 +22,16 @@ public class EnderecoService {
                     .extract().as(EnderecoListaDTO.class);
         return result;
     }
+    public Response pegarEnderecosSemAuth(){
+        Response result =
+            given()
+            .when()
+                .get(baseUri+"/endereco")
+            .then()
+                .log().all()
+                .extract().response();
+        return result;
+    }
     public EnderecoListaDTO pegarEnderecos(Integer pagina){
         EnderecoListaDTO result =
             given()
@@ -109,6 +119,18 @@ public class EnderecoService {
                 .extract().as(EnderecoDTO[].class);
         return result;
     }
+    public Response pegarEnderecosPorIdPessoaResult(Integer idPessoa){
+        Response result =
+            given()
+                .header("Authorization", token)
+                .queryParam("idPessoa",idPessoa)
+            .when()
+                .get(baseUri+"/endereco/retorna-por-id-pessoa")
+            .then()
+                .log().all()
+                .extract().response();
+        return result;
+    }
     public EnderecoDTO adicionarEndereco(Integer idPessoa,String body){
         EnderecoDTO result =
             given()
@@ -135,6 +157,21 @@ public class EnderecoService {
         .then()
             .log().all()
             .extract().response();
+        return result;
+    }
+
+    public Response editarEndereco(Integer idEndereco,EnderecoDTO payload){
+        Response result =
+            given()
+                .header("Authorization", token)
+                .pathParam("idEndereco",idEndereco)
+                .contentType(ContentType.JSON)
+                .body(payload)
+            .when()
+                .put(baseUri+"/endereco/{idEndereco}")
+            .then()
+                .log().all()
+                .extract().response();
         return result;
     }
 

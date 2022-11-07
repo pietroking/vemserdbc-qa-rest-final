@@ -132,10 +132,8 @@ public class PessoaAceitacaoTest {
 
     @Test
     public void deveRetornarListaDePessoa(){
-
-        PageDTOPessoaDTO[] resultService = service.buscarPessoas();
-
-        Assert.assertEquals(resultService, "Maicon Machado Gerardi".toUpperCase());
+        PageDTOPessoaDTO resultService = service.buscarPessoas();
+        assertThat(resultService.getPage(),Matchers.is(0));
     }
 
     @Test
